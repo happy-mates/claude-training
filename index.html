@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Happy Mates — Resource Hub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href="/assets/happy-mates-logo.svg" />
+<link rel="stylesheet" href="/assets/colors_and_type.css" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  html, body { margin: 0; padding: 0; }
+  body { font-family: var(--hm-font-sans); color: var(--hm-foreground); background: var(--hm-background); -webkit-font-smoothing: antialiased; }
+  button, input { font-family: inherit; }
+  a { color: inherit; }
+
+  .course-tile:hover { border-color: var(--hm-primary) !important; box-shadow: var(--hm-shadow-md); transform: translateY(-2px); }
+  .domain-row:hover span:nth-child(2) { color: var(--hm-primary); }
+
+  @media (max-width: 860px) {
+    .hub-nav-links { display: none !important; }
+    .hub-nav-search { display: none !important; }
+  }
+  @media (max-width: 520px) {
+    .resource-grid { grid-template-columns: 1fr !important; }
+  }
+  /* single-column grid never overflows narrow viewports */
+  @media (max-width: 480px) {
+    .resource-grid > * { min-width: 0; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="module" src="/src/main.tsx"></script>
+</body>
+</html>
