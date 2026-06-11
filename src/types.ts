@@ -29,6 +29,11 @@ export interface LangGuide {
   file: string;
 }
 
+export interface Video {
+  src: string;
+  title: Bilingual<string>;
+}
+
 export interface ExamStat {
   k: Bilingual<string>;
   v: string;
@@ -55,6 +60,7 @@ export interface Resource {
   contents: Bilingual<ContentItem[]>;
   links: ResourceLink[];
   clone?: string;
+  video?: Video;
   note?: Bilingual<string>;
   langs?: LangGuide[];
   langBase?: string;
