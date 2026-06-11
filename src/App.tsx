@@ -2,7 +2,7 @@
 import { useMemo, useState, type CSSProperties } from "react";
 import { COURSES, RESOURCES } from "./data";
 import { HubFooter, HubNav, Icon, Button, L } from "./components";
-import { CoursesSection, ResourceCard } from "./cards";
+import { CoursesSection, FriendsSection, ResourceCard } from "./cards";
 import {
   TweaksPanel,
   TweakSection,
@@ -146,6 +146,8 @@ export default function App() {
         )}
 
         {showCourses && coursesMatch && <CoursesSection lang={lang} query={query} />}
+
+        {!q && <FriendsSection lang={lang} />}
 
         {nothing && (
           <div style={{ textAlign: "center", padding: "60px 0", color: "var(--hm-muted-foreground)" }}>

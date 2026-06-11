@@ -224,6 +224,7 @@ export function HubNav({ lang, setLang, onSearch, query }: HubNavProps) {
         {link(L({ en: "Certify", da: "Certificering" }, lang), "certify")}
         {link(L({ en: "Community", da: "Fællesskab" }, lang), "community")}
         {link(L({ en: "Courses", da: "Kurser" }, lang), "courses")}
+        {link(L({ en: "Friends", da: "Venner" }, lang), "friends")}
       </div>
       <div style={{ display: "flex", gap: 12, alignItems: "center", flexShrink: 0 }}>
         <div className="hub-nav-search" style={{
