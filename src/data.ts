@@ -151,6 +151,15 @@ export const RESOURCES: Resource[] = [
   },
 ];
 
+// ── Claude Partner Network (CPN) Learning Path ──────────────────────────────
+// The four courses required for Claude Partner certification, in order.
+export const CPN_PATH_HREFS = [
+  "https://anthropic.skilljar.com/introduction-to-agent-skills",
+  "https://anthropic.skilljar.com/claude-with-the-anthropic-api",
+  "https://anthropic.skilljar.com/introduction-to-model-context-protocol",
+  "https://anthropic.skilljar.com/claude-code-in-action",
+];
+
 // ── Free Anthropic Academy courses (from the Architect repo's curated list) ──
 export const COURSES: Course[] = [
   { t: "Claude 101", d: { en: "Claude for everyday work", da: "Claude i hverdagen" }, href: "https://anthropic.skilljar.com/claude-101" },
