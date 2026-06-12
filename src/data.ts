@@ -32,9 +32,12 @@ export const RESOURCES: Resource[] = [
       ],
     },
     clone: `git clone ${GH}/claude-partner-network-training.git`,
+    video: {
+      src: "https://www.youtube-nocookie.com/embed/VLkRZgWHrpo?start=17",
+      title: { en: "Claude API Training walkthrough", da: "Claude API-træning gennemgang" },
+    },
     links: [
       { label: { en: "Open repo", da: "Åbn repo" }, href: `${GH}/claude-partner-network-training`, primary: true, icon: "github" },
-      { label: { en: "Setup guide", da: "Opsætning" }, href: `${GH}/claude-partner-network-training#setup`, icon: "wrench" },
       { label: { en: "001 · Basic request", da: "001 · Basis-kald" }, href: `${GH}/claude-partner-network-training/blob/main/001_request.ipynb`, icon: "notebook-pen" },
     ],
   },

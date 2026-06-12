@@ -11,6 +11,7 @@ import type {
   LangGuide,
   Resource,
   ResourceLink,
+  Video,
 } from "./types";
 
 function LinkRow({ links, lang, accent }: { links: ResourceLink[]; lang: Lang; accent: Accent }) {
@@ -96,6 +97,21 @@ function DomainBlock({ data, lang }: { data: { exam: ExamStat[]; domains: Domain
   );
 }
 
+function VideoEmbed({ video, lang }: { video: Video; lang: Lang }) {
+  return (
+    <div style={{ position: "relative", width: "100%", aspectRatio: "16 / 9", borderRadius: 12, overflow: "hidden", border: "1px solid var(--hm-border)" }}>
+      <iframe
+        src={video.src}
+        title={L(video.title, lang)}
+        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", border: 0 }}
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      />
+    </div>
+  );
+}
+
 function Note({ children, accent }: { children: React.ReactNode; accent: Accent }) {
   return (
     <div style={{
@@ -136,6 +152,7 @@ export function ResourceCard({ data, lang, density }: { data: Resource; lang: La
         <ContentList items={L(data.contents, lang)} accent={a} />
 
         {data.clone && <CopyLine text={data.clone} lang={lang} />}
+        {data.video && <VideoEmbed video={data.video} lang={lang} />}
         {data.langs && data.langBase && <LangPills langs={data.langs} base={data.langBase} lang={lang} />}
         {data.exam && data.domains && data.domainBase && <DomainBlock data={{ exam: data.exam, domains: data.domains, domainBase: data.domainBase }} lang={lang} />}
         {data.note && <Note accent={a}>{L(data.note, lang)}</Note>}
