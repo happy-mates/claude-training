@@ -3,10 +3,13 @@ import { useState, type ComponentType, type CSSProperties, type ReactNode } from
 import {
   ArrowUpRight,
   Award,
+  BarChart2,
   BookOpen,
+  Building2,
   CalendarDays,
   Check,
   CirclePlay,
+  Clock,
   Compass,
   Copy,
   ExternalLink,
@@ -24,6 +27,7 @@ import {
   LayoutGrid,
   ListChecks,
   type LucideProps,
+  Mail,
   MessageCircle,
   MessagesSquare,
   Notebook,
@@ -32,6 +36,7 @@ import {
   Rocket,
   Search,
   SearchX,
+  ShieldCheck,
   Sparkles,
   Terminal,
   Ticket,
@@ -57,9 +62,12 @@ export function L<T>(v: Bilingual<T>, lang: Lang): T {
 const ICONS: Record<string, ComponentType<LucideProps>> = {
   "arrow-up-right": ArrowUpRight,
   award: Award,
+  "bar-chart-2": BarChart2,
   "book-open": BookOpen,
+  "building-2": Building2,
   "calendar-days": CalendarDays,
   check: Check,
+  clock: Clock,
   compass: Compass,
   copy: Copy,
   "external-link": ExternalLink,
@@ -76,6 +84,7 @@ const ICONS: Record<string, ComponentType<LucideProps>> = {
   languages: Languages,
   "layout-grid": LayoutGrid,
   "list-checks": ListChecks,
+  mail: Mail,
   "message-circle": MessageCircle,
   "messages-square": MessagesSquare,
   notebook: Notebook,
@@ -85,6 +94,7 @@ const ICONS: Record<string, ComponentType<LucideProps>> = {
   rocket: Rocket,
   search: Search,
   "search-x": SearchX,
+  "shield-check": ShieldCheck,
   sparkles: Sparkles,
   terminal: Terminal,
   ticket: Ticket,
@@ -220,6 +230,7 @@ export function HubNav({ lang, setLang, onSearch, query }: HubNavProps) {
         <Logo size={34} /><Wordmark size={17} />
       </a>
       <div className="hub-nav-links" style={{ display: "flex", gap: 22, alignItems: "center" }}>
+        {link(L({ en: "Partnership", da: "Partnerskab" }, lang), "partnership")}
         {link(L({ en: "Build", da: "Byg" }, lang), "build")}
         {link(L({ en: "Certify", da: "Certificering" }, lang), "certify")}
         {link(L({ en: "Community", da: "Fællesskab" }, lang), "community")}

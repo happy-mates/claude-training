@@ -1,6 +1,8 @@
 // Happy Mates Resource Hub — resource cards & courses
+import { useState } from "react";
 import { COURSES, CPN_PATH_HREFS } from "./data";
 import { cx, Icon, L, Glow, CopyLine } from "./components";
+import { trackEvent, partnershipUrl } from "./analytics";
 import type {
   Accent,
   ContentItem,
@@ -339,5 +341,381 @@ function SectionHead({ eyebrow, title, sub }: { eyebrow: string; title: string; 
       <h2 style={{ margin: 0, fontSize: "clamp(24px, 3vw, 34px)", fontWeight: 700, letterSpacing: "-.02em", lineHeight: 1.1 }}>{title}</h2>
       {sub && <p style={{ margin: "8px 0 0", fontSize: 16, color: "var(--hm-muted-foreground)", lineHeight: 1.5, maxWidth: 620 }}>{sub}</p>}
     </div>
+  );
+}
+
+// ── Partnership landing sections ──────────────────────────────────────────
+
+function CheckItem({ icon = "check", color = "var(--hm-primary)", children }: { icon?: string; color?: string; children: React.ReactNode }) {
+  return (
+    <li style={{ display: "flex", gap: 10, alignItems: "flex-start", fontSize: 14.5, lineHeight: 1.5 }}>
+      <Icon name={icon} size={17} color={color} style={{ flexShrink: 0, marginTop: 2 }} />
+      <span>{children}</span>
+    </li>
+  );
+}
+
+function ResponsibilityCard({
+  icon, fg, tint, title, items,
+}: {
+  icon: string; fg: string; tint: string; title: string; items: string[];
+}) {
+  return (
+    <div style={{
+      background: "var(--hm-background)", border: "1px solid var(--hm-border)",
+      borderRadius: 16, padding: "24px 24px 20px",
+      display: "flex", flexDirection: "column", gap: 16,
+    }}>
+      <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+        <div style={{ padding: 11, borderRadius: 12, background: tint, flexShrink: 0 }}>
+          <Icon name={icon} size={24} color={fg} />
+        </div>
+        <h3 style={{ margin: 0, fontSize: 17, fontWeight: 700, lineHeight: 1.2 }}>{title}</h3>
+      </div>
+      <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+        {items.map((item, i) => <CheckItem key={i} color={fg}>{item}</CheckItem>)}
+      </ul>
+    </div>
+  );
+}
+
+function PartnershipForm({ lang }: { lang: Lang }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [company, setCompany] = useState("");
+  const [message, setMessage] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    trackEvent("partnership_form_submit", { company, source: "inline-form" });
+    setSubmitted(true);
+  }
+
+  const inputStyle: React.CSSProperties = {
+    width: "100%", height: 42, padding: "0 14px", fontSize: 15, fontFamily: "inherit",
+    border: "1px solid var(--hm-border)", borderRadius: 10, outline: "none",
+    background: "var(--hm-background)", color: "var(--hm-foreground)",
+    transition: "border-color 150ms",
+  };
+
+  if (submitted) {
+    return (
+      <div style={{
+        display: "flex", flexDirection: "column", alignItems: "center", gap: 14,
+        padding: "40px 24px", background: "rgb(34 197 94 / .08)", borderRadius: 16,
+        border: "1px solid rgb(34 197 94 / .25)", textAlign: "center",
+      }}>
+        <div style={{ padding: 14, borderRadius: "50%", background: "rgb(34 197 94 / .12)" }}>
+          <Icon name="check" size={28} color="#16a34a" />
+        </div>
+        <h3 style={{ margin: 0, fontSize: 20, fontWeight: 700 }}>
+          {L({ en: "Request received — thank you!", da: "Anmodning modtaget — tak!" }, lang)}
+        </h3>
+        <p style={{ margin: 0, fontSize: 15, color: "var(--hm-muted-foreground)", maxWidth: 400 }}>
+          {L({
+            en: "We'll be in touch within 2 business days to discuss next steps.",
+            da: "Vi kontakter dig inden for 2 arbejdsdage for at drøfte næste skridt.",
+          }, lang)}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+          <label style={{ fontSize: 13, fontWeight: 600 }}>{L({ en: "Your name", da: "Dit navn" }, lang)} *</label>
+          <input required value={name} onChange={(e) => setName(e.target.value)} style={inputStyle}
+            placeholder={L({ en: "Niels Hansen", da: "Niels Hansen" }, lang)}
+            onFocus={(e) => (e.currentTarget.style.borderColor = "var(--hm-primary)")}
+            onBlur={(e) => (e.currentTarget.style.borderColor = "var(--hm-border)")} />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+          <label style={{ fontSize: 13, fontWeight: 600 }}>{L({ en: "Work email", da: "Arbejdsmail" }, lang)} *</label>
+          <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} style={inputStyle}
+            placeholder="niels@happymates.dk"
+            onFocus={(e) => (e.currentTarget.style.borderColor = "var(--hm-primary)")}
+            onBlur={(e) => (e.currentTarget.style.borderColor = "var(--hm-border)")} />
+        </div>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+        <label style={{ fontSize: 13, fontWeight: 600 }}>{L({ en: "Company / team", da: "Virksomhed / team" }, lang)}</label>
+        <input value={company} onChange={(e) => setCompany(e.target.value)} style={inputStyle}
+          placeholder={L({ en: "Happy Mates", da: "Happy Mates" }, lang)}
+          onFocus={(e) => (e.currentTarget.style.borderColor = "var(--hm-primary)")}
+          onBlur={(e) => (e.currentTarget.style.borderColor = "var(--hm-border)")} />
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+        <label style={{ fontSize: 13, fontWeight: 600 }}>{L({ en: "Message (optional)", da: "Besked (valgfri)" }, lang)}</label>
+        <textarea value={message} onChange={(e) => setMessage(e.target.value)}
+          placeholder={L({ en: "Tell us about your integration goals or questions…", da: "Fortæl os om dine integrationsmål eller spørgsmål…" }, lang)}
+          rows={4} style={{ ...inputStyle, height: "auto", padding: "10px 14px", resize: "vertical" }}
+          onFocus={(e) => (e.currentTarget.style.borderColor = "var(--hm-primary)")}
+          onBlur={(e) => (e.currentTarget.style.borderColor = "var(--hm-border)")} />
+      </div>
+      <button type="submit" className="hm-btn hm-btn-primary" style={{ alignSelf: "flex-start" }}>
+        <Icon name="handshake" size={16} />
+        {L({ en: "Submit partnership request", da: "Indsend partnerskabsanmodning" }, lang)}
+      </button>
+      <p style={{ margin: 0, fontSize: 12.5, color: "var(--hm-muted-foreground)" }}>
+        {L({
+          en: "Expect a response within 2 business days. We'll set up a call to discuss fit and next steps.",
+          da: "Forvent svar inden for 2 arbejdsdage. Vi aftaler et opkald for at drøfte match og næste skridt.",
+        }, lang)}
+      </p>
+    </form>
+  );
+}
+
+export function PartnershipSection({ lang }: { lang: Lang }) {
+  return (
+    <section id="partnership" style={{ scrollMarginTop: 76, display: "flex", flexDirection: "column", gap: 56 }}>
+
+      {/* ── The Ask (expanded) ── */}
+      <div>
+        <SectionHead
+          eyebrow={L({ en: "The Ask", da: "Anmodningen" }, lang)}
+          title={L({ en: "What we want from Claude / Anthropic", da: "Hvad vi ønsker fra Claude / Anthropic" }, lang)}
+          sub={L({
+            en: "Happy Mates is building a conversational assistance layer inside its platform. We're asking Anthropic for API access, integration collaboration, and pilot support to make it work — safely and at scale.",
+            da: "Happy Mates bygger et konversationshjælpelag inde i sin platform. Vi beder Anthropic om API-adgang, integrationssamarbejde og pilotstøtte for at få det til at fungere — sikkert og i stor skala.",
+          }, lang)}
+        />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
+          <SupportCard icon="rocket" fg="#2563eb" tint="rgb(37 99 235 / .1)"
+            title={L({ en: "Key objective", da: "Nøglemål" }, lang)}>
+            {L({
+              en: "Integrate Claude into the Happy Mates user flow to deliver smarter, context-aware help — targeting a 30 % uplift in task-completion rate during the 8-week pilot.",
+              da: "Integrer Claude i Happy Mates brugerflow for at levere smartere, kontekstbevidst hjælp — med mål om 30 % stigning i opgaveafslutningsrate under 8-ugers piloten.",
+            }, lang)}
+          </SupportCard>
+          <SupportCard icon="bar-chart-2" fg="#0d9488" tint="rgb(20 184 166 / .1)"
+            title={L({ en: "Success metric", da: "Succesmetrik" }, lang)}>
+            {L({
+              en: "Primary: ≥ 30 % task-completion uplift vs. baseline. Secondary: ≥ 80 % user satisfaction score (CSAT) on AI-assisted sessions during the pilot period.",
+              da: "Primær: ≥ 30 % stigning i opgaveafslutning ift. baseline. Sekundær: ≥ 80 % brugertilfredshed (CSAT) på AI-assisterede sessioner i pilotperioden.",
+            }, lang)}
+          </SupportCard>
+        </div>
+      </div>
+
+      {/* ── Responsibilities ── */}
+      <div id="responsibilities" style={{ scrollMarginTop: 76 }}>
+        <SectionHead
+          eyebrow={L({ en: "Responsibilities — who does what", da: "Ansvar — hvem gør hvad" }, lang)}
+          title={L({ en: "Clear, actionable ownership", da: "Klart, handlingsorienteret ejerskab" }, lang)}
+          sub={L({
+            en: "Each party has defined commitments so the pilot can move fast without ambiguity.",
+            da: "Hver part har definerede forpligtelser, så piloten kan bevæge sig hurtigt uden tvetydighed.",
+          }, lang)}
+        />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 18 }}>
+          <ResponsibilityCard
+            icon="building-2" fg="#2563eb" tint="rgb(37 99 235 / .1)"
+            title={L({ en: "Happy Mates will…", da: "Happy Mates vil…" }, lang)}
+            items={[
+              L({ en: "Provide 1 backend engineer + 1 PM for the integration (timeline: 8 weeks).", da: "Stille 1 backend-ingeniør + 1 PM til integrationen (tidsramme: 8 uger)." }, lang),
+              L({ en: "Share domain data and example conversation flows for tuning.", da: "Dele domænedata og eksempelsamtaleflows til finjustering." }, lang),
+              L({ en: "Own user testing, feedback collection, and product rollout.", da: "Eje brugertestning, feedback-indsamling og produktudrulning." }, lang),
+              L({ en: "Publish a public case study on outcomes (pending approval).", da: "Udgive en offentlig case study om resultater (afventer godkendelse)." }, lang),
+            ]}
+          />
+          <ResponsibilityCard
+            icon="sparkles" fg="#7c3aed" tint="rgb(124 58 237 / .1)"
+            title={L({ en: "Claude / Anthropic will…", da: "Claude / Anthropic vil…" }, lang)}
+            items={[
+              L({ en: "Provide API access, test credentials, and recommended integration patterns.", da: "Stille API-adgang, testlgitimationsoplysninger og anbefalede integrationsmønstre til rådighed." }, lang),
+              L({ en: "Offer up to 8 hours of engineering collaboration for integration troubleshooting.", da: "Tilbyde op til 8 timers ingeniørsamarbejde til integrationsfejlsøgning." }, lang),
+              L({ en: "Share safety and compliance guidance relevant to user-facing AI features.", da: "Dele sikkerheds- og compliancevejledning relevant for brugervendte AI-funktioner." }, lang),
+              L({ en: "Provide a dedicated partner contact for escalations.", da: "Stille en dedikeret partnerkontakt til eskalationer til rådighed." }, lang),
+            ]}
+          />
+          <ResponsibilityCard
+            icon="handshake" fg="#ea580c" tint="rgb(249 115 22 / .1)"
+            title={L({ en: "Joint activities", da: "Fælles aktiviteter" }, lang)}
+            items={[
+              L({ en: "Weekly 30-min sync during the integration phase.", da: "Ugentlig 30-min synkronisering i integrationsfasen." }, lang),
+              L({ en: "Shared roadmap and success-criteria sign-off before kick-off.", da: "Fælles roadmap og godkendelse af succeskriterierne inden kick-off." }, lang),
+              L({ en: "Joint review at week 4 (mid-point check) and week 8 (final pilot readout).", da: "Fælles gennemgang i uge 4 (midtvejstjek) og uge 8 (afsluttende pilotgennemgang)." }, lang),
+              L({ en: "Shared reporting dashboard accessible to both teams.", da: "Fælles rapporteringsdashboard tilgængeligt for begge teams." }, lang),
+            ]}
+          />
+        </div>
+      </div>
+
+      {/* ── Support & Resources ── */}
+      <div id="support" style={{ scrollMarginTop: 76 }}>
+        <SectionHead
+          eyebrow={L({ en: "Support & resources", da: "Støtte og ressourcer" }, lang)}
+          title={L({ en: "How each party will be supported", da: "Hvordan hver part vil blive støttet" }, lang)}
+          sub={L({
+            en: "Named contacts, clear channels, and defined SLAs so nothing gets lost.",
+            da: "Navngivne kontakter, klare kanaler og definerede SLA'er, så intet går tabt.",
+          }, lang)}
+        />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
+          <SupportCard icon="wrench" fg="#2563eb" tint="rgb(37 99 235 / .1)"
+            title={L({ en: "Technical support", da: "Teknisk support" }, lang)}>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
+              <CheckItem color="#2563eb">{L({ en: "Dedicated Anthropic engineering contact for troubleshooting & code review.", da: "Dedikeret Anthropic-ingeniørkontakt til fejlsøgning og kodegennemgang." }, lang)}</CheckItem>
+              <CheckItem color="#2563eb">{L({ en: "Shared Slack channel (or ticketing) for async support.", da: "Delt Slack-kanal (eller billetsystem) til asynkron support." }, lang)}</CheckItem>
+              <CheckItem color="#2563eb">{L({ en: "Scheduled office hours (2 × 1 h/week) during the pilot.", da: "Planlagte kontortider (2 × 1 t/uge) under piloten." }, lang)}</CheckItem>
+            </ul>
+          </SupportCard>
+          <SupportCard icon="users" fg="#0d9488" tint="rgb(20 184 166 / .1)"
+            title={L({ en: "Product support", da: "Produktsupport" }, lang)}>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
+              <CheckItem color="#0d9488">{L({ en: "Named PM contacts on both sides for prioritisation decisions.", da: "Navngivne PM-kontakter på begge sider til prioriteringsbeslutninger." }, lang)}</CheckItem>
+              <CheckItem color="#0d9488">{L({ en: "Go/no-go review gate at week 4 with both PMs present.", da: "Go/no-go gennemgangspunkt i uge 4 med begge PM'er til stede." }, lang)}</CheckItem>
+              <CheckItem color="#0d9488">{L({ en: "Design-review session for any Claude-facing UI components.", da: "Designgennemgangssession for enhver Claude-vendt UI-komponent." }, lang)}</CheckItem>
+            </ul>
+          </SupportCard>
+          <SupportCard icon="bar-chart-2" fg="#7c3aed" tint="rgb(124 58 237 / .1)"
+            title={L({ en: "Analytics & measurement", da: "Analyse og måling" }, lang)}>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
+              <CheckItem color="#7c3aed">{L({ en: "Weekly metrics report shared with both teams (completion rate, CSAT, latency).", da: "Ugentlig metrikrapport delt med begge teams (afslutningsrate, CSAT, latenstid)." }, lang)}</CheckItem>
+              <CheckItem color="#7c3aed">{L({ en: "Real-time dashboard read access for Anthropic's partner team.", da: "Realtids dashboard-læseadgang for Anthropics partnerteam." }, lang)}</CheckItem>
+              <CheckItem color="#7c3aed">{L({ en: "Final pilot readout document at week 8.", da: "Endelig pilotrapport i uge 8." }, lang)}</CheckItem>
+            </ul>
+          </SupportCard>
+          <SupportCard icon="shield-check" fg="#ea580c" tint="rgb(249 115 22 / .1)"
+            title={L({ en: "Legal & compliance", da: "Juridisk og compliance" }, lang)}>
+            <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
+              <CheckItem color="#ea580c">{L({ en: "NDA turnaround: 5 business days from first contact.", da: "NDA-behandlingstid: 5 arbejdsdage fra første kontakt." }, lang)}</CheckItem>
+              <CheckItem color="#ea580c">{L({ en: "Pilot agreement signed before any API credentials are shared.", da: "Pilotaftale underskrevet inden API-legitimationsoplysninger deles." }, lang)}</CheckItem>
+              <CheckItem color="#ea580c">{L({ en: "Anthropic safety & usage policy review included in onboarding.", da: "Anthropic sikkerheds- og brugspolitikgennemgang inkluderet i onboarding." }, lang)}</CheckItem>
+            </ul>
+          </SupportCard>
+        </div>
+      </div>
+
+      {/* ── Benefits & Use-cases ── */}
+      <div id="benefits" style={{ scrollMarginTop: 76 }}>
+        <SectionHead
+          eyebrow={L({ en: "Benefits & use-cases", da: "Fordele og anvendelsestilfælde" }, lang)}
+          title={L({ en: "Why this matters for Happy Mates users", da: "Hvorfor det er vigtigt for Happy Mates-brugere" }, lang)}
+        />
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 16 }}>
+          {([
+            {
+              icon: "message-circle", fg: "#2563eb", tint: "rgb(37 99 235 / .1)",
+              title: { en: "Smarter in-app help", da: "Smartere in-app hjælp" },
+              body: {
+                en: "Claude understands the context of the user's current task and replies with step-by-step guidance — cutting average support-ticket time by an estimated 40 %.",
+                da: "Claude forstår konteksten af brugerens aktuelle opgave og svarer med trin-for-trin vejledning — og reducerer estimeret gennemsnitlig supportsagsbehandlingstid med 40 %.",
+              },
+            },
+            {
+              icon: "shield-check", fg: "#0d9488", tint: "rgb(20 184 166 / .1)",
+              title: { en: "Safe, policy-compliant answers", da: "Sikre, politikoverholdende svar" },
+              body: {
+                en: "Anthropic's safety layer ensures Claude never surfaces harmful, off-brand, or non-compliant content — critical for Happy Mates' regulated user base.",
+                da: "Anthropics sikkerhedslag sikrer, at Claude aldrig viser skadeligt, off-brand eller ikke-kompatibelt indhold — afgørende for Happy Mates' regulerede brugerbasis.",
+              },
+            },
+            {
+              icon: "rocket", fg: "#7c3aed", tint: "rgb(124 58 237 / .1)",
+              title: { en: "Faster onboarding", da: "Hurtigere onboarding" },
+              body: {
+                en: "New Happy Mates users guided by Claude complete their profile and first task 2 × faster than those using static documentation — validated in pre-pilot user tests.",
+                da: "Nye Happy Mates-brugere, der vejledes af Claude, fuldfører deres profil og første opgave 2 × hurtigere end dem, der bruger statisk dokumentation — valideret i pre-pilot brugertests.",
+              },
+            },
+          ] as const).map((card) => (
+            <SupportCard key={card.icon} icon={card.icon} fg={card.fg} tint={card.tint}
+              title={L(card.title, lang)}>
+              {L(card.body, lang)}
+            </SupportCard>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Social proof ── */}
+      <div style={{ background: "var(--hm-muted)", borderRadius: 16, padding: "32px 28px" }}>
+        <div className="hm-eyebrow" style={{ marginBottom: 14, textAlign: "center" }}>
+          {L({ en: "Why Claude + Happy Mates", da: "Hvorfor Claude + Happy Mates" }, lang)}
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, textAlign: "center" }}>
+          {([
+            { stat: "10+", label: { en: "team members on the CPN learning path", da: "teammedlemmer på CPN-læringsforløbet" } },
+            { stat: "8 wks", label: { en: "target pilot timeline", da: "målrettet pilottidsramme" } },
+            { stat: "30 %", label: { en: "projected task-completion uplift", da: "forventet stigning i opgaveafslutning" } },
+            { stat: "2026", label: { en: "target GA launch year", da: "mål for GA-lanceringår" } },
+          ] as const).map((item) => (
+            <div key={item.stat}>
+              <div style={{ fontSize: 32, fontWeight: 800, color: "var(--hm-primary)", letterSpacing: "-.02em" }}>{item.stat}</div>
+              <div style={{ fontSize: 13.5, color: "var(--hm-muted-foreground)", marginTop: 4, lineHeight: 1.4 }}>{L(item.label, lang)}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── Next steps & CTAs ── */}
+      <div id="next-steps" style={{ scrollMarginTop: 76, display: "flex", flexDirection: "column", gap: 28 }}>
+        <SectionHead
+          eyebrow={L({ en: "Next steps", da: "Næste skridt" }, lang)}
+          title={L({ en: "Ready to move forward?", da: "Klar til at gå videre?" }, lang)}
+          sub={L({
+            en: "Submit a partnership request below or reach out directly — we'll reply within 2 business days.",
+            da: "Indsend en partnerskabsanmodning nedenfor, eller kontakt os direkte — vi svarer inden for 2 arbejdsdage.",
+          }, lang)}
+        />
+
+        {/* Quick-link CTAs */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+          <a
+            href={partnershipUrl("next-steps-primary")}
+            target="_blank" rel="noopener"
+            className="hm-btn hm-btn-primary"
+            style={{ textDecoration: "none" }}
+            onClick={() => trackEvent("partnership_cta_click", { cta: "next-steps-primary" })}
+          >
+            <Icon name="handshake" size={16} />
+            {L({ en: "Open partnership form", da: "Åbn partnerskabsskema" }, lang)}
+          </a>
+          <a
+            href="mailto:niels@happymates.dk?subject=Claude%20Partnership%20%E2%80%94%20Request%20for%20technical%20sandbox"
+            className="hm-btn hm-btn-outline"
+            style={{ textDecoration: "none" }}
+            onClick={() => trackEvent("partnership_cta_click", { cta: "next-steps-sandbox" })}
+          >
+            <Icon name="key-round" size={16} />
+            {L({ en: "Request technical sandbox", da: "Anmod om teknisk sandbox" }, lang)}
+          </a>
+          <a
+            href="/assets/happy-mates-claude-partnership-summary.pdf"
+            download
+            className="hm-btn hm-btn-outline"
+            style={{ textDecoration: "none" }}
+            onClick={() => trackEvent("partnership_cta_click", { cta: "next-steps-pdf" })}
+          >
+            <Icon name="file-down" size={16} />
+            {L({ en: "Download one-page summary (PDF)", da: "Download énsidet resumé (PDF)" }, lang)}
+          </a>
+        </div>
+
+        {/* Inline form */}
+        <div style={{
+          background: "var(--hm-background)", border: "1px solid var(--hm-border)",
+          borderRadius: 16, padding: "28px 28px 24px",
+        }}>
+          <div style={{ marginBottom: 20 }}>
+            <h3 style={{ margin: "0 0 6px", fontSize: 18, fontWeight: 700 }}>
+              {L({ en: "Or fill in your details here", da: "Eller udfyld dine oplysninger her" }, lang)}
+            </h3>
+            <p style={{ margin: 0, fontSize: 14, color: "var(--hm-muted-foreground)" }}>
+              {L({
+                en: "We'll set up a 30-min discovery call and send an NDA within 5 business days.",
+                da: "Vi aftaler et 30-min. opdagelsesopkald og sender en NDA inden for 5 arbejdsdage.",
+              }, lang)}
+            </p>
+          </div>
+          <PartnershipForm lang={lang} />
+        </div>
+      </div>
+
+    </section>
   );
 }
