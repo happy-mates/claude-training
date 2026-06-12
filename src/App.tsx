@@ -61,15 +61,15 @@ function Hero({ lang, query, setQuery, tab, setTab, backdrop }: HeroProps) {
       <div style={{ position: "relative", maxWidth: 1120, margin: "0 auto", padding: "64px 24px 40px", textAlign: "center" }}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "5px 14px", borderRadius: 999, background: "rgb(37 99 235 / .1)", color: "var(--hm-primary)", fontSize: 13, fontWeight: 600, marginBottom: 20, whiteSpace: "nowrap" }}>
           <Icon name="heart-handshake" size={15} />
-          {L({ en: "Friends of Happy Mates", da: "Venner af Happy Mates" }, lang)}
+          {L({ en: "The Happy Mates Resource Hub", da: "Happy Mates ressourcehub" }, lang)}
         </div>
         <h1 style={{ margin: 0, fontSize: "clamp(36px, 6vw, 68px)", fontWeight: 700, lineHeight: 1.05, letterSpacing: "-.025em", textWrap: "balance" }}>
-          {L({ en: "Everything you need —", da: "Alt hvad du skal bruge —" }, lang)}<br />
-          <span className="hm-gradient-text">{L({ en: "in one digital kitchen.", da: "i ét digitalt køkken." }, lang)}</span>
+          {L({ en: "Everything you need to", da: "Alt hvad du skal bruge for at" }, lang)}<br />
+          <span className="hm-gradient-text">{L({ en: "build with Claude.", da: "bygge med Claude." }, lang)}</span>
         </h1>
         <p style={{ margin: "22px auto 0", maxWidth: 600, fontSize: 18.5, lineHeight: 1.55, color: "var(--hm-muted-foreground)", textWrap: "pretty" }}>
-          {L({ en: "Repos, study guides and the community space — the fastest way to find the right Happy Mates resource and start cooking with Claude.",
-               da: "Repos, studieguider og fællesskabet — den hurtigste vej til den rette Happy Mates-ressource, så du kan komme i gang med Claude." }, lang)}
+          {L({ en: "One home for every Happy Mates repo, study guide, course and community space — find the right resource fast and start building with Claude.",
+               da: "Ét sted for alle Happy Mates-repos, studieguider, kurser og fællesskabet — find den rette ressource hurtigt og kom i gang med at bygge med Claude." }, lang)}
         </p>
 
         <div style={{ margin: "30px auto 0", maxWidth: 560, position: "relative" }}>
