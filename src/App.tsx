@@ -64,13 +64,26 @@ function Hero({ lang, query, setQuery, tab, setTab, backdrop }: HeroProps) {
           {L({ en: "Friends of Happy Mates", da: "Venner af Happy Mates" }, lang)}
         </div>
         <h1 style={{ margin: 0, fontSize: "clamp(36px, 6vw, 68px)", fontWeight: 700, lineHeight: 1.05, letterSpacing: "-.025em", textWrap: "balance" }}>
-          {L({ en: "Everything you need —", da: "Alt hvad du skal bruge —" }, lang)}<br />
-          <span className="hm-gradient-text">{L({ en: "in one digital kitchen.", da: "i ét digitalt køkken." }, lang)}</span>
+          {L({ en: "Train · Build · Certify", da: "Træn · Byg · Certificér" }, lang)}<br />
+          <span className="hm-gradient-text">{L({ en: "with Claude AI.", da: "med Claude AI." }, lang)}</span>
         </h1>
         <p style={{ margin: "22px auto 0", maxWidth: 600, fontSize: 18.5, lineHeight: 1.55, color: "var(--hm-muted-foreground)", textWrap: "pretty" }}>
-          {L({ en: "Repos, study guides and the community space — the fastest way to find the right Happy Mates resource and start cooking with Claude.",
-               da: "Repos, studieguider og fællesskabet — den hurtigste vej til den rette Happy Mates-ressource, så du kan komme i gang med Claude." }, lang)}
+          {L({ en: "Everything the Happy Mates community needs to learn the Claude API, prepare for the Certified Architect exam, and connect with fellow builders — in one place.",
+               da: "Alt Happy Mates-fællesskabet behøver for at lære Claude API'et, forberede sig til Certified Architect-eksamen og møde andre buildere — samlet ét sted." }, lang)}
         </p>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 10, margin: "20px auto 0", maxWidth: 560 }}>
+          {[
+            { icon: "rocket",          en: "3 hands-on repos",          da: "3 hands-on repos" },
+            { icon: "play-circle",     en: "13 free courses",           da: "13 gratis kurser" },
+            { icon: "languages",       en: "9-language study guides",   da: "Studieguider på 9 sprog" },
+            { icon: "messages-square", en: "Community on Teams",        da: "Fællesskab på Teams" },
+          ].map((s) => (
+            <span key={s.en} style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "5px 13px", borderRadius: 999, background: "var(--hm-muted)", border: "1px solid var(--hm-border)", fontSize: 13, color: "var(--hm-muted-foreground)", fontWeight: 500 }}>
+              <Icon name={s.icon} size={14} style={{ color: "var(--hm-primary)", opacity: .85 }} />
+              {L({ en: s.en, da: s.da }, lang)}
+            </span>
+          ))}
+        </div>
 
         <div style={{ margin: "30px auto 0", maxWidth: 560, position: "relative" }}>
           <Icon name="search" size={19} style={{ position: "absolute", left: 18, top: "50%", transform: "translateY(-50%)", opacity: .45 }} />
