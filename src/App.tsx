@@ -2,7 +2,7 @@
 import { useMemo, useState, type CSSProperties } from "react";
 import { COURSES, RESOURCES } from "./data";
 import { HubFooter, HubNav, Icon, Button, L } from "./components";
-import { CoursesSection, FriendsSection, ResourceCard } from "./cards";
+import { CoursesSection, FriendsSection, PartnershipSection, ResourceCard } from "./cards";
 import {
   TweaksPanel,
   TweakSection,
@@ -10,6 +10,7 @@ import {
   TweakColor,
   useTweaks,
 } from "./tweaks-panel";
+import { trackEvent, partnershipUrl } from "./analytics";
 import type { Bilingual, Lang, Resource, Tweaks } from "./types";
 
 const TWEAK_DEFAULTS: Tweaks = {
@@ -60,19 +61,43 @@ function Hero({ lang, query, setQuery, tab, setTab, backdrop }: HeroProps) {
       )}
       <div style={{ position: "relative", maxWidth: 1120, margin: "0 auto", padding: "64px 24px 40px", textAlign: "center" }}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "5px 14px", borderRadius: 999, background: "rgb(37 99 235 / .1)", color: "var(--hm-primary)", fontSize: 13, fontWeight: 600, marginBottom: 20, whiteSpace: "nowrap" }}>
-          <Icon name="heart-handshake" size={15} />
-          {L({ en: "Friends of Happy Mates", da: "Venner af Happy Mates" }, lang)}
+          <Icon name="handshake" size={15} />
+          {L({ en: "Claude Partnership Invitation", da: "Claude Partnerskabsinvitation" }, lang)}
         </div>
-        <h1 style={{ margin: 0, fontSize: "clamp(36px, 6vw, 68px)", fontWeight: 700, lineHeight: 1.05, letterSpacing: "-.025em", textWrap: "balance" }}>
-          {L({ en: "Everything you need —", da: "Alt hvad du skal bruge —" }, lang)}<br />
-          <span className="hm-gradient-text">{L({ en: "in one digital kitchen.", da: "i ét digitalt køkken." }, lang)}</span>
+        <h1 style={{ margin: 0, fontSize: "clamp(32px, 5.5vw, 62px)", fontWeight: 700, lineHeight: 1.05, letterSpacing: "-.025em", textWrap: "balance" }}>
+          {L({ en: "We're asking Claude to partner with Happy Mates", da: "Vi beder Claude om at samarbejde med Happy Mates" }, lang)}<br />
+          <span className="hm-gradient-text">{L({ en: "for smarter, safer user assistance.", da: "for smartere, sikrere brugerhjælp." }, lang)}</span>
         </h1>
-        <p style={{ margin: "22px auto 0", maxWidth: 600, fontSize: 18.5, lineHeight: 1.55, color: "var(--hm-muted-foreground)", textWrap: "pretty" }}>
-          {L({ en: "Repos, study guides and the community space — the fastest way to find the right Happy Mates resource and start cooking with Claude.",
-               da: "Repos, studieguider og fællesskabet — den hurtigste vej til den rette Happy Mates-ressource, så du kan komme i gang med Claude." }, lang)}
+        <p style={{ margin: "22px auto 0", maxWidth: 640, fontSize: 18.5, lineHeight: 1.55, color: "var(--hm-muted-foreground)", textWrap: "pretty" }}>
+          {L({
+            en: "Together we build AI-assisted experiences that delight Happy Mates users — with safety, compliance, and measurable impact at the forefront.",
+            da: "Sammen bygger vi AI-assisterede oplevelser, der glæder Happy Mates-brugere — med sikkerhed, compliance og målbar effekt i fokus.",
+          }, lang)}
         </p>
 
-        <div style={{ margin: "30px auto 0", maxWidth: 560, position: "relative" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: 32 }}>
+          <a
+            href={partnershipUrl("hero-primary")}
+            target="_blank" rel="noopener"
+            className="hm-btn hm-btn-primary hm-btn-lg"
+            style={{ textDecoration: "none" }}
+            onClick={() => trackEvent("partnership_cta_click", { cta: "hero-primary" })}
+          >
+            <Icon name="handshake" size={17} />
+            {L({ en: "Partner with Claude", da: "Bliv partner med Claude" }, lang)}
+          </a>
+          <a
+            href="#responsibilities"
+            className="hm-btn hm-btn-outline hm-btn-lg"
+            style={{ textDecoration: "none" }}
+            onClick={() => trackEvent("partnership_cta_click", { cta: "hero-secondary" })}
+          >
+            <Icon name="list-checks" size={17} />
+            {L({ en: "See responsibilities & support", da: "Se ansvar og støtte" }, lang)}
+          </a>
+        </div>
+
+        <div style={{ margin: "40px auto 0", maxWidth: 560, position: "relative" }}>
           <Icon name="search" size={19} style={{ position: "absolute", left: 18, top: "50%", transform: "translateY(-50%)", opacity: .45 }} />
           <input value={query} onChange={(e) => setQuery(e.target.value)}
             placeholder={L({ en: "Search repos, guides, courses…", da: "Søg i repos, guider, kurser…" }, lang)}
@@ -135,6 +160,8 @@ export default function App() {
       <Hero lang={lang} query={query} setQuery={setQuery} tab={tab} setTab={setTab} backdrop={t.heroBackdrop} />
 
       <main style={{ maxWidth: 1120, margin: "0 auto", padding: "48px 24px 16px", display: "flex", flexDirection: "column", gap: 56 }}>
+        {!q && <PartnershipSection lang={lang} />}
+
         {cards.length > 0 && (
           <section id="resources" style={{ scrollMarginTop: 76 }}>
             {/* invisible anchors so nav links land in the right place when filtered */}
